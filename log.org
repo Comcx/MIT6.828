@@ -1,0 +1,21 @@
+#+TITLE: MIT6.828 OS Studying log
+#+AUTHOR: Comcx
+#+DATE: <2019-01-19 Sat>
+
+
+* LEC 1
+SCHEDULED: <2019-01-20 Sun>
+
+** DONE Xv6 resources got!
+** DONE Unix Intro
+** TODO LAB 1
+*** DONE Got LAB resources
+*** TODO Learning Assembly languages
+
+
+
+
+
+
+
+
