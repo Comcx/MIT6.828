@@ -60,15 +60,33 @@ runcmd(struct cmd *cmd)
     ecmd = (struct execcmd*)cmd;
     if(ecmd->argv[0] == 0)
       exit(0);
-    fprintf(stderr, "exec not implemented\n");
+    //fprintf(stderr, "exec not implemented\n");
     // Your code here ...
+    char path[256];
+    if(!access(ecmd->argv[0], F_OK)) {
+      execv(ecmd->argv[0], ecmd->argv);
+      fprintf(stderr, "executed in home.\n");
+    } else {
+      strcpy(path, "/bin/");
+      strcat(path, ecmd->argv[0]);
+      if(!access(path, F_OK)) {
+	execv(path, ecmd->argv);
+      } else {
+	fprintf(stderr, "\"%s\" command not found!\n", path);
+      }
+    }
     break;
 
   case '>':
   case '<':
     rcmd = (struct redircmd*)cmd;
-    fprintf(stderr, "redir not implemented\n");
+    // fprintf(stderr, "redir not implemented\n");
     // Your code here ...
+    close(rcmd->fd);
+    if(open(rcmd->file, rcmd->mode, 777) == -1) {
+      fprintf(stderr, "open file error\n");
+      exit(0);
+    }
     runcmd(rcmd->cmd);
     break;
 
@@ -76,6 +94,7 @@ runcmd(struct cmd *cmd)
     pcmd = (struct pipecmd*)cmd;
     fprintf(stderr, "pipe not implemented\n");
     // Your code here ...
+    
     break;
   }    
   exit(0);
@@ -86,7 +105,7 @@ getcmd(char *buf, int nbuf)
 {
   
   if (isatty(fileno(stdin)))
-    fprintf(stdout, "6.828$ ");
+    fprintf(stdout, "0.0$ ");
   memset(buf, 0, nbuf);
   fgets(buf, nbuf, stdin);
   if(buf[0] == 0) // EOF
