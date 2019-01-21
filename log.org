@@ -18,8 +18,8 @@ on 6.828 offical guide!
 I followed everything in guide, but I still ran into /error/ while trying to
 install /qemu/:
 - *Situation 1: Python2.7 needed*
-We have to use python under version 3 :(
-[Solution] Install python2.7, in my Arch, command:
+We have to use python under version 3 :(  
+*[Solution]* Install python2.7, in my Arch, command:
 #+begin_src shell
 sudo pacman -S python2
 #+end_src
@@ -32,19 +32,20 @@ Finally, I found this /upgrade/
 Android's had <sys/sysmacros.h> for a long time, we are likely to
 remove the transtive include from <sys/types.h>
 
-Therefore,
-[Solution] add code:
+Therefore,  
+*[Solution]* add code:
 #+begin_src c
 #include <sys/sysmacros.h>
 #+end_src
 
 - *Situation3: qemu-nox*
 Since I am using pure tty in Arch, when I tried to command:
-make qemu,
+make qemu,  
 I got /error/: could not connect server.
-[Solution] use command:
+*[Solution]* use command:  
+#+begin_src shell
 make qemu-nox
-
+#+end_src
 
 Now I've successfully build JOS environment! :)
 
