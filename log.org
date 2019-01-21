@@ -52,6 +52,49 @@ I got /error/: could not connect server.
 make qemu-nox
 #+end_src
 
-Now I've successfully built JOS environment! :)
+Now I've successfully built /QEMU/ environment! :)
+
+
+**** DONE Debugging *QEMU*
+Unfortunately, I ran into trouble again while debugging.
+I followed instructions:
+1) Command:
+#+begin_src shell
+make qemu-gdb
+#+end_src
+2) Open another terminal window, command in the same directory:
+#+begin_src shell
+make gdb
+#+end_src
+
+then, I got error message:
+#+begin_src
+error while loading shared libraries: libreadline.so.8
+#+end_src
+
+I tried to upgrade readline:
+#+begin_src shell
+sudo pacman -S readline
+#+end_src
+
+Then, cd /usr/lib, I found:
+
+libreadline.so.8
+
+which is already up-to-date.
+
+However, when I ran: make qemu-gdb, error occurred again:
+#+begin_src
+error while loading shared libraries: libreadline.so.7
+#+end_src
+
+This time lack version 7 2333333333 :(
+Finally, I cd /usr/lib, command:
+#+begin_src shell
+sudo ln -s libreadline.so.7 libreadline.so.8
+#+end_src
+to get both version 7 and 8 and everything's ok now.
+
+
 
 
