@@ -11,11 +11,41 @@ SCHEDULED: <2019-01-20 Sun>
 ** TODO LAB 1
 *** DONE Got LAB resources
 *** TODO Learning Assembly languages
+*** DONE Build JOS environment [little difficult]
+**** DONE Build *QEMU*
+To build qemu for 6.828, one need to follow the instructions written
+on 6.828 offical guide!
+I followed everything in guide, but I still ran into /error/ while trying to
+install /qemu/:
+- *Situation 1: Python2.7 needed*
+We have to use python under version 3 :(
+[Solution] Install python2.7, in my Arch, command:
+#+begin_src shell
+sudo pacman -S python2
+#+end_src
+then, in configuration phase, add option: --python=python2.7
+
+- *Situation2: Undefined reference to major or minor*
+This cost me large amount of time to fix.
+Finally, I found this /upgrade/
+
+Android's had <sys/sysmacros.h> for a long time, we are likely to
+remove the transtive include from <sys/types.h>
+
+Therefore,
+[Solution] add code:
+#+begin_src c
+#include <sys/sysmacros.h>
+#+end_src
+
+- *Situation3: qemu-nox*
+Since I am using pure tty in Arch, when I tried to command:
+make qemu,
+I got /error/: could not connect server.
+[Solution] use command:
+make qemu-nox
 
 
-
-
-
-
+Now I've successfully build JOS environment! :)
 
 
