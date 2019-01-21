@@ -52,6 +52,6 @@ I got /error/: could not connect server.
 make qemu-nox
 #+end_src
 
-Now I've successfully build JOS environment! :)
+Now I've successfully built JOS environment! :)
 
 
