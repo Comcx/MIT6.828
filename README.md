@@ -2,7 +2,11 @@
 
 I'm very excited to start to learn OS from 6.828.  
 Here I list materials and codes I used.  
-Keep writing `log.org` to record.  
+Keep writing `log.org` to record my progress.  
+
+# Categories
+- Homework: My homework in 6.828
+- lab: JOS system from 6.828 gate
 
 # Resources  
 [MIT6.828 2017 Gate](https://pdos.csail.mit.edu/6.828/2017/schedule.html)  
