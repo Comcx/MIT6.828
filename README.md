@@ -1,7 +1,7 @@
 # MIT 6.828 Operating System Engineering record
 
 I'm very excited to start to learn OS from 6.828.  
-Here I list materials and codes I used.
+Here I list materials and codes I used.  
 Keep writing `log.org` to record.  
 
 # Resources  
