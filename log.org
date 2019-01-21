@@ -8,9 +8,13 @@ SCHEDULED: <2019-01-20 Sun>
 
 ** DONE Xv6 resources got!
 ** DONE Unix Intro
-** TODO LAB 1
+** TODO [50%] LAB 1
 *** DONE Got LAB resources
-*** TODO Learning Assembly languages
+*** NEXT [Exercise 1] Learning Assembly languages
+**** NEXT Got Assembly book -> learning Intel assembly syntax
+**** TODO [Book] Brennan's Guide to Inline Assembly -> 
+     learn AT&T syntax, which is semantically equivalent to Intel syntax.
+
 *** DONE Build JOS environment [little difficult]
 **** DONE Build *QEMU*
 To build qemu for 6.828, one need to follow the instructions written
@@ -94,6 +98,27 @@ Finally, I cd /usr/lib, command:
 sudo ln -s libreadline.so.7 libreadline.so.8
 #+end_src
 to get both version 7 and 8 and everything's ok now.
+
+
+
+
+
+*** NEXT Simiulating PC & Debug
+**** DONE [Exercise 2] Follow BIOS steps by command _si_
+**** DONE Understanding PC's physical address & boot
+***** TODO [Book] Phil Storrs PC Hardware book
+
+**** TODO Understanding the *Boot loader*
+***** DONE The Boot sector
+Most boot codes lies in the first sector of a bootable device(e.g. CD-ROM).
+However, Some modern machines are now using 2 sectors to load boot codes.
+
+See _"El Torito" Bootable CD-ROM Format Specification._
+
+***** TODO Read the Boot Codes
+
+
+
 
 
 
