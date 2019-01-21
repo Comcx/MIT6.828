@@ -9,6 +9,6 @@ Keep writing `log.org` to record my progress.
 - lab: JOS system from 6.828 gate
 
 # Resources  
-[MIT6.828 2017 Gate](https://pdos.csail.mit.edu/6.828/2017/schedule.html)  
-[MIT6.828 2017 materials](https://pdos.csail.mit.edu/6.828/2017/reference.html)
+[MIT6.828 2017 Gate](https://pdos.csail.mit.edu/6.828/2018/schedule.html)  
+[MIT6.828 2017 materials](https://pdos.csail.mit.edu/6.828/2018/reference.html)
 
