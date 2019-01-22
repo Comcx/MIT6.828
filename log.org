@@ -3,8 +3,9 @@
 #+DATE: <2019-01-19 Sat>
 
 
-* LEC 1
-SCHEDULED: <2019-01-20 Sun>
+* [2/3] LEC 1
+  SCHEDULED: <2019-01-20 Sun>
+  DEADLINE:  <2019-01-27 Sun>
 
 ** DONE Xv6 resources got!
 ** DONE Unix Intro
@@ -12,6 +13,69 @@ SCHEDULED: <2019-01-20 Sun>
 *** DONE Got LAB resources
 *** NEXT [Exercise 1] Learning Assembly languages
 **** NEXT Got Assembly book -> learning Intel assembly syntax
+Learning NASM syntax...
+- Basic syntax already knew <2019-01-22 Tue>
+- Learning more directions...
+  Plan to install *NASM* tool to test Assembly codes.
+***** NEXT Using /NASM/
+      NASM use Intel like syntax, learning with the book...
+:Operations:
+-- Operations are op codes which can be directly translated to machine code.
+*mov*
+*add*
+*sub*
+
+:end:
+
+:Directions:
+-- Directions are ad-hoc codes which can be used to direct assembler to generate code.
+-- Here character 'X' is special for different formats:
+| Unit        | Letter |
+|-------------+--------|
+| Byte        | B      |
+| Word        | W      |
+| Double word | D      |
+| Quad word   | Q      |
+| Ten bytes   | T      |
+
+*/symbol/ equ /value/*
+
+*%define* -- like C #define
+
+*res/X/*  -- reserves room(unit /X/)
+
+*d/X/*    -- reserve and initalize
+
+*times*   -- for repeated reserve directions
+
+:end:
+
+*Labels* can be used conveniently: 
+
+plain labels are their address;
+
+squared(e.g. [label]) labels are contents inside the address of the label
+
+:Size-Specifiers:
+-- Size specifiers are used when the assembler can not infer the actual data's size of operation.
+
+-- e.g. Suppose we have code:
+#+begin_src
+mov [L6], 1
+#+end_src
+Here, the assembler has no idea what the actual size of /[L6]/ is.
+To solve this, we simply add a /size specifier/:
+#+begin_src
+mov dword [L6], 1
+#+end_src
+
+All size specifiers are:
+
+*byte | word | dword | qword | tword*
+
+:end:
+
+
 **** TODO [Book] Brennan's Guide to Inline Assembly -> 
      learn AT&T syntax, which is semantically equivalent to Intel syntax.
 
