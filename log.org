@@ -40,13 +40,15 @@ Learning NASM syntax...
 
 */symbol/ equ /value/*
 
-*%define* -- like C #define
+*%define*   -- like C #define
 
-*res/X/*  -- reserves room(unit /X/)
+*%include*  -- like C #include
 
-*d/X/*    -- reserve and initalize
+*res/X/*    -- reserves room(unit /X/)
 
-*times*   -- for repeated reserve directions
+*d/X/*      -- reserve and initalize
+
+*times*     -- for repeated reserve directions
 
 :end:
 
@@ -74,6 +76,14 @@ All size specifiers are:
 *byte | word | dword | qword | tword*
 
 :end:
+
+*[Pitfall]* The book says file /asm_io.inc/ can be downloaded from url in book,
+however, I found nothing but a plain article.
+Finally, I found that the link has been updated to:
+
+[[http://pacman128.github.io/pcasm/]]
+
+:( cost me a lot of time.........
 
 
 **** TODO [Book] Brennan's Guide to Inline Assembly -> 
