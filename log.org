@@ -70,6 +70,9 @@ SF = OF. If vleft < vright, ZF is unset and SF /= OF.
 | *JNC* | branches only if CF is unset |
 | *JP*  | branches only if PF is set   |
 | *JNP* | branches only if PF is unset |
+p.s. /PF/ is the parity flag which 
+     indicates the _odd or evenness_ of a result.
+
 
 
 There several variations of /JMP/ instruction:
@@ -97,6 +100,56 @@ before the label in the JMP instruction.
 *FAR* 
 This jump allows control to move to _another code segment_. This is a
 very rare thing to do in 386 protected mode.
+
+-- More(advanced) jumps
+| Signed     | Unsigned                                                       |
+|------------+----------------------------------------------------------------|
+| *JE*       | branches if vleft = vright JE branches if vleft = vright       |
+| *JNE*      | branches if vleft 6= vright JNE branches if vleft 6= vright    |
+| *JL, JNGE* | branches if vleft < vright JB, JNAE branches if vleft < vright |
+| *JLE, JNG* | branches if vleft ≤ vright JBE, JNA branches if vleft ≤ vright |
+| *JG, JNLE* | branches if vleft > vright JA, JNBE branches if vleft > vright |
+| *JGE, JNL* | branches if vleft ≥ vright JAE, JNB branches if vleft ≥ vright |
+
+
+
+
+-- LOOPs
+*LOOP*
+| *LOOP*           | Decrements ECX, if ECX 6= 0, branches to label      |
+| *LOOPE, LOOPZ*   | Decrements ECX (FLAGS register is not modified), if |
+|                  | ECX /= 0 and ZF = 1, branches                       |
+| *LOOPNE, LOOPNZ* | Decrements ECX (FLAGS unchanged), if ECX /=         |
+|                  | 0 and ZF = 0, branches                              |
+
+
+
+-------------------------------------------
+
+-- Bit operations
+
+| *SHL obj bits* | Logic shift left       |
+| *SHR obj bits* | Logic shift right      |
+| *SAL obj bits* | Arithmetic shift left  |
+| *SAR obj bits* | Arithmetic shift right |
+| *ROL obj bits* | Rotate left            |
+| *ROR obj bits* | Rotate right           |
+| *RCL obj bits* |                        |
+| *RCR obj bits* |                        |
+p.s. /obj/ means object, /bits/ refers number of bits to move
+
+
+-- Boolean operations
+
+| *and* | *or* | *xor* | *not* |
+*TEST* operation
+
+The TEST instruction performs an AND operation, but does not store
+the result. 
+It only sets the FLAGS register based on what the result would
+be (much like how the CMP instruction performs a subtraction but only sets
+FLAGS).
+
 
 
 
