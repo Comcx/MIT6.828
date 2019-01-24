@@ -21,9 +21,84 @@ Learning NASM syntax...
       NASM use Intel like syntax, learning with the book...
 :Operations:
 -- Operations are op codes which can be directly translated to machine code.
-*mov*
-*add*
-*sub*
+
+-- MOVement
+*MOV dest, source*
+
+-- ADDition
+*ADD dest source*
+
+-- SUBtraction
+*SUB dest source*
+
+-- CoMParision
+*CMP vleft, vright*
+
+For unsigned integers, there are two flags (bits in the FLAGS register)
+that are important: the zero (ZF) and carry (CF) flags. The zero flag is
+set (1) if the resulting difference would be zero. The carry flag is used as a
+borrow flag for subtraction. Consider a comparison like:
+#+begin_src
+cmp vleft, vright
+#+end_src
+The difference of vleft - vright is computed and the flags are set accordingly. 
+If the difference of the of CMP is zero, vleft = vright, then ZF is set
+(i.e. 1) and the CF is unset (i.e. 0). If vleft > vright, then ZF is unset
+and CF is unset (no borrow). If vleft < vright, then ZF is unset and CF
+is set (borrow)
+
+For signed integers, there are 3 flags that are important: the ZERO flag(ZF),
+OVERFLOW flag(OF), and SIGN flag(SF). The OVERFLOW flag
+is set if the result of an operation overflows (or underflows). The sign flag
+is set if the result of an operation is negative. If vleft = vright, the ZF
+is set (just as for unsigned integers). If vleft > vright, ZF is unset and
+SF = OF. If vleft < vright, ZF is unset and SF /= OF.
+
+-- JuMPs
+
+-- Unconsitional jump
+*JMP address*
+
+--------------------------------------
+| *JZ*  | branches only if ZF is set   |
+| *JNZ* | branches only if ZF is unset |
+| *JO*  | branches only if OF is set   |
+| *JNO* | branches only if OF is unset |
+| *JS*  | branches only if SF is set   |
+| *JNS* | branches only if SF is unset |
+| *JC*  | branches only if CF is set   |
+| *JNC* | branches only if CF is unset |
+| *JP*  | branches only if PF is set   |
+| *JNP* | branches only if PF is unset |
+
+
+There several variations of /JMP/ instruction:
+
+*SHORT* 
+This jump is very limited in range. It can only move up or down
+_128 bytes_ in memory. The advantage of this type is that it uses less
+memory than the others. It uses a single signed byte to store the
+displacement of the jump. The displacement is how many bytes to
+move ahead or behind. (The displacement is added to EIP). To specify
+a short jump, use the SHORT keyword immediately before the label in
+the JMP instruction.
+
+*NEAR* 
+This jump is the _default_ type for both unconditional and conditional branches, 
+it can be used to jump to _any location in a segment_. 
+Actually, the 80386 supports two types of near jumps. One
+uses two bytes for the displacement. This allows one to move up or
+down roughly 32,000 bytes. The other type uses four bytes for the
+displacement, which of course allows one to move to any location in
+the code segment. The four byte type is the default in 386 protected
+mode. The two byte type can be specified by putting the WORD keyword
+before the label in the JMP instruction.
+
+*FAR* 
+This jump allows control to move to _another code segment_. This is a
+very rare thing to do in 386 protected mode.
+
+
 
 :end:
 
@@ -84,6 +159,10 @@ Finally, I found that the link has been updated to:
 [[http://pacman128.github.io/pcasm/]]
 
 :( cost me a lot of time.........
+compiler /first.asm/ successfully!!! <2019-01-22 Tue>
+
+
+
 
 
 **** TODO [Book] Brennan's Guide to Inline Assembly -> 
