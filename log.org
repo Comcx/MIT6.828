@@ -11,14 +11,16 @@
 ** DONE Unix Intro
 ** TODO [50%] LAB 1
 *** DONE Got LAB resources
-*** NEXT [Exercise 1] Learning Assembly languages
-**** NEXT Got Assembly book -> learning Intel assembly syntax
+*** NEXT [1/2] [Exercise 1] Learning Assembly languages
+**** DONE Got Assembly book -> learning Intel assembly syntax
 Learning NASM syntax...
 - Basic syntax already knew <2019-01-22 Tue>
 - Learning more directions...
   Plan to install *NASM* tool to test Assembly codes.
-***** NEXT Using /NASM/
+***** DONE Using /NASM/
       NASM use Intel like syntax, learning with the book...
+
+
 :Operations:
 -- Operations are op codes which can be directly translated to machine code.
 
@@ -151,9 +153,30 @@ be (much like how the CMP instruction performs a subtraction but only sets
 FLAGS).
 
 
+------------------------------------------
+
+-- Stack
+
+*PUSH* | *POP*
+
+
+-- Call & Ret
+
+The *CALL* instruction makes an unconditional jump to a subprogram and 
+pushes the address of the next instruction on the stack. 
+
+The *RET* instruction pops off an address and jumps to that address. 
+When using these instructions, it is very important that one manage the stack correctly 
+so that the right number is popped off by the RET instruction!
 
 
 :end:
+
+
+
+
+
+
 
 :Directions:
 -- Directions are ad-hoc codes which can be used to direct assembler to generate code.
@@ -218,8 +241,10 @@ compiler /first.asm/ successfully!!! <2019-01-22 Tue>
 
 
 
-**** TODO [Book] Brennan's Guide to Inline Assembly -> 
+**** NEXT [Book] Brennan's Guide to Inline Assembly -> 
      learn AT&T syntax, which is semantically equivalent to Intel syntax.
+
+
 
 *** DONE Build JOS environment [little difficult]
 **** DONE Build *QEMU*
