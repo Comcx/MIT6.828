@@ -174,10 +174,6 @@ so that the right number is popped off by the RET instruction!
 
 
 
-
-
-
-
 :Directions:
 -- Directions are ad-hoc codes which can be used to direct assembler to generate code.
 -- Here character 'X' is special for different formats:
@@ -243,6 +239,42 @@ compiler /first.asm/ successfully!!! <2019-01-22 Tue>
 
 **** NEXT [Book] Brennan's Guide to Inline Assembly -> 
      learn AT&T syntax, which is semantically equivalent to Intel syntax.
+
+- *Register naming*
+Register names are prefixed with "*%*". To reference eax:
+| AT&T  | %eax |
+| Intel | eax  |
+
+- *Source/Destination Ordering*
+In AT&T syntax (which is the UNIX standard, BTW) the source is always on the left, 
+and the destination is always on the right.
+So let's load ebx with the value in eax:
+
+| AT&T  | movl %eax, %ebx |
+| Intel | mov  ebx, eax   |
+
+- *Constant value/immediate value format*
+You must prefix all constant/immediate values with "$".
+Let's load eax with the address of the "C" variable booga, which is static.
+
+| AT&T  | movl $_booga, %eax |
+| Intel | mov eax, _booga    |
+
+Now let's load ebx with /0xd00d/:
+| AT&T  | movl $0xd00d, %ebx |
+| Intel | mov ebx, d00dh     |
+
+- *Operator size specification*
+You must suffix the instruction with one of *b, w, or l* to 
+specify the width of the destination register as a byte, word or longword. 
+If you omit this, GAS (GNU assembler) will attempt to guess. 
+You don't want GAS to guess, and guess wrong! Don't forget it.
+
+| AT&T  | movw %ax, %bx |
+| Intel | mov bx, ax    |
+
+- *Referencing memory*
+
 
 
 
