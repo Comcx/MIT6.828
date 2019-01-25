@@ -3,15 +3,15 @@
 #+DATE: <2019-01-19 Sat>
 
 
-* [2/3] LEC 1
+* TODO [2/3] LEC 1
   SCHEDULED: <2019-01-20 Sun>
   DEADLINE:  <2019-01-27 Sun>
 
 ** DONE Xv6 resources got!
 ** DONE Unix Intro
-** TODO [50%] LAB 1
+** NEXT [50%] LAB 1
 *** DONE Got LAB resources
-*** NEXT [1/2] [Exercise 1] Learning Assembly languages
+*** NEXT [2/3] [Exercise 1] Learning Assembly languages
 **** DONE Got Assembly book -> learning Intel assembly syntax
 Learning NASM syntax...
 - Basic syntax already knew <2019-01-22 Tue>
@@ -236,8 +236,7 @@ compiler /first.asm/ successfully!!! <2019-01-22 Tue>
 
 
 
-
-**** NEXT [Book] Brennan's Guide to Inline Assembly -> 
+**** DONE [Book] Brennan's Guide to Inline Assembly -> 
      learn AT&T syntax, which is semantically equivalent to Intel syntax.
 
 - *Register naming*
@@ -274,9 +273,59 @@ You don't want GAS to guess, and guess wrong! Don't forget it.
 | Intel | mov bx, ax    |
 
 - *Referencing memory*
+DJGPP uses 386-protected mode, so you can forget all that real-mode addressing junk, 
+including the restrictions on which register has what default segment, 
+which registers can be base or index pointers. 
+Now, we just get 6 general purpose registers. 
+(7 if you use ebp, but be sure to restore it yourself or compile with -fomit-frame-pointer.)
+Here is the canonical format for 32-bit addressing:
+
+| AT&T  | immed32(basepointer,indexpointer,indexscale)      |
+| Intel | [basepointer + indexpointer*indexscale + immed32] |
+
+--------------------------
+- *Inline assembly*
+Here is the basic format:
+#+begin_src c
+asm ( "statements" : output_registers : input_registers : clobbered_registers);
+
+/* e.g.*/
+asm ("cld\n\t"
+     "rep\n\t"
+     "stosl"
+     : /* no output registers */
+     : "c" (count), "a" (fill_value), "D" (dest)
+     : "%ecx", "%edi" );
+#+end_src
+
+Here's the list of register loading codes that you'll be likely to use:
+
+| a   | eax                                                         |
+| b   | ebx                                                         |
+| c   | ecx                                                         |
+| d   | edx                                                         |
+| S   | esi                                                         |
+| D   | edi                                                         |
+| I   | constant value (0 to 31)                                    |
+| q,r | dynamically allocated register (see below)                  |
+| g   | eax, ebx, ecx, edx or variable in memory                    |
+| A   | eax and edx combined into a 64-bit integer (use long longs) |
+
+*Important note*: If your assembly statement must execute where you put it, 
+(i.e. must not be moved out of a loop as an optimization), 
+put the keyword /volatile/ after asm and before the ()'s. 
+To be ultra-careful, use:
+#+begin_src c
+__asm__ __volatile__ (...whatever...);
+#+end_src
+However, I would like to point out that if your assembly's only purpose is to calculate the output registers, 
+with no other side effects, 
+you should leave off the volatile keyword so your statement will be processed into GCC's 
+common subexpression elimination optimization.
 
 
 
+**** TODO [Book] 80386 Programmer's Reference Manual
 
 *** DONE Build JOS environment [little difficult]
 **** DONE Build *QEMU*
@@ -371,14 +420,14 @@ to get both version 7 and 8 and everything's ok now.
 **** DONE Understanding PC's physical address & boot
 ***** TODO [Book] Phil Storrs PC Hardware book
 
-**** TODO Understanding the *Boot loader*
+**** NEXT Understanding the *Boot loader*
 ***** DONE The Boot sector
 Most boot codes lies in the first sector of a bootable device(e.g. CD-ROM).
 However, Some modern machines are now using 2 sectors to load boot codes.
 
 See _"El Torito" Bootable CD-ROM Format Specification._
 
-***** TODO Read the Boot Codes
+***** NEXT Read the Boot Codes
 
 
 
