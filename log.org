@@ -420,18 +420,69 @@ to get both version 7 and 8 and everything's ok now.
 **** DONE Understanding PC's physical address & boot
 ***** TODO [Book] Phil Storrs PC Hardware book
 
-**** NEXT Understanding the *Boot loader*
+**** NEXT [3/4] Understanding the *Boot loader*
 ***** DONE The Boot sector
 Most boot codes lies in the first sector of a bootable device(e.g. CD-ROM).
 However, Some modern machines are now using 2 sectors to load boot codes.
 
 See _"El Torito" Bootable CD-ROM Format Specification._
 
-***** NEXT Read the Boot Codes
+***** NEXT [1/3] Read the Boot Codes
+****** DONE Reading /boot.S/
+Since the codes in /boot.S/ are not so much, I'll analysis these codes in detail.
 
+However, while reading the source code, I found that I have little knowledge of 8086
+Intel architecture, which is very curial to fully understand /boot.S/.
 
+Therefore, I decide to learn the main usages of /boot.S/(I do not have enough time to learn everything).
+I shall study 80386 programming later. Here I list main purposes of /boot.S/:
 
+- First, the boot loader switches the processor from real mode to 32-bit protected mode, 
+  because it is only in this mode that software can access all the memory above 1MB 
+  in the processor's physical address space.
 
+- Second, the boot loader reads the kernel from the hard disk 
+  by directly accessing the IDE disk device registers via the x86's special I/O instructions. 
 
+****** NEXT Reading /boot.asm/
+Well, little difficult for me currently...
+Do this later
+
+****** NEXT Reading /bootmain.c/
+later
+
+***** DONE Learning *GDB* commands
+| *si(stepi)* | next                                                            |
+| *x/Nx*      | Display a hex dump of N words starting at virtual address addr. |
+| *x/Ni*      | Display the N assembly instructions starting at addr.           |
+| *b *addr*   | Set a breakpoint at the EIP addr.                               |
+| *c*         | Continue to a break point                                       |
+
+***** DONE [3/3] [Exercise 3] Set breakpoints and answering questions
+****** DONE Set break point at 0x7c00 & trace /boot.S/
+****** DONE Trace into bootmain() in /boot/main.c/ and then into readsect()
+****** DONE [4/4] Answering questions
+******* DONE At what point does the processor start executing 32-bit code? 
+	What exactly causes the switch from 16- to 32-bit mode?
+After [ 0:7c2d] => 0x7c2d: ljmp $0x8,$0x7c32，i.s. /ljmp $PROT_MODE_CSEG, $protcseg/ in boot.S,
+the address turned into 0x7c32.
+******* DONE What is the last instruction of the boot loader executed, 
+	and what is the first instruction of the kernel it just loaded?
+#+begin_src c
+((void (*)(void)) (ELFHDR->e_entry))();
+movw $0x1234,0x472
+#+end_src
+******* DONE Where is the first instruction of the kernel?
+/kern/entry.S/
+******* DONE How does the boot loader decide how many sectors it must read in order to 
+	fetch the entire kernel from disk? Where does it find this information?
+objdump -h obj/kern/kernel
+
+**** NEXT Loading the *kernel*
+***** NEXT [0/2] [Exercise 4] Review basics of C programming
+****** NEXT [book] *The C Programming Language*
+****** TODO Test with /pointers.c/
+
+***** TODO Learning *ELF* format
 
 
