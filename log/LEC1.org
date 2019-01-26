@@ -415,9 +415,40 @@ to get both version 7 and 8 and everything's ok now.
 
 
 
-*** NEXT [50%] Simiulating PC & Debug
+*** NEXT [60%] Simiulating PC & Debug
 **** DONE [Exercise 2] Follow BIOS steps by command _si_
 **** DONE Understanding PC's physical address & boot
+#+begin_src
++------------------+  <- 0xFFFFFFFF (4GB)
+|      32-bit      |
+|  memory mapped   |
+|     devices      |
+|                  |
+/\/\/\/\/\/\/\/\/\/\
+
+/\/\/\/\/\/\/\/\/\/\
+|                  |
+|      Unused      |
+|                  |
++------------------+  <- depends on amount of RAM
+|                  |
+|                  |
+| Extended Memory  |
+|                  |
+|                  |
++------------------+  <- 0x00100000 (1MB)
+|     BIOS ROM     |
++------------------+  <- 0x000F0000 (960KB)
+|  16-bit devices, |
+|  expansion ROMs  |
++------------------+  <- 0x000C0000 (768KB)
+|   VGA Display    |
++------------------+  <- 0x000A0000 (640KB)
+|                  |
+|    Low Memory    |
+|                  |
++------------------+  <- 0x00000000
+#+end_src
 ***** TODO [Book] Phil Storrs PC Hardware book
 
 **** NEXT [3/4] Understanding the *Boot loader*
@@ -478,7 +509,7 @@ movw $0x1234,0x472
 	fetch the entire kernel from disk? Where does it find this information?
 objdump -h obj/kern/kernel
 
-**** NEXT [1/2] Loading the *kernel*
+**** DONE [4/4] Loading the *kernel*
 ***** DONE [2/2] [Exercise 4] Review basics of C programming
 ****** DONE [book] *The C Programming Language*
 Too much pages, I plan to read just pages on
@@ -520,7 +551,7 @@ line 1 ~ 4 are simple for me, I only analysis line 5:
 | 0xb0b40 | 0xb0b41 | 0xb0b42 | 0xb0b43 |
 |      90 |      01 |      00 |      00 |
 
-The element's stored in address 0xbfb4bf8c~0xbfb4bf8f, whose value is 301, i.e.0x0000012D.
+The element's stored in address 0xb0b44~0xb0b47, whose value is 301, i.e.0x0000012D.
 
 | 0xb0b44 | 0xb0b45 | 0xb0b46 | 0xb0b47 |
 |      2D |      01 |      00 |      00 |
@@ -536,9 +567,71 @@ So, the value of a[1] had turned into 0x0001F490 = 128144, and a[2]'s value turn
 
 p.s. It is important to point out that, since I'm using intel architecture, my machine uses /little endian method/.
 
-***** NEXT Learning *ELF* format
+***** DONE Learning *ELF* format
+Extracted from /MIT6.828 LAB1 page/:
 
+For purposes of 6.828, you can consider an ELF executable to be a header with loading information, 
+followed by several program sections, each of which is a contiguous chunk of code or data intended to 
+be loaded into memory at a specified address. 
+The boot loader does not modify the code or data; it loads it into memory and starts executing it.
 
+An ELF binary starts with a _fixed-length ELF header_, 
+followed by a variable-length program header listing each of the program sections to be loaded. 
+The C definitions for these ELF headers are in inc/elf.h. The program sections we're interested in are:
+
+*.text*: The program's executable instructions.
+*.rodata*: Read-only data, such as ASCII string constants produced by the C compiler. 
+(We will not bother setting up the hardware to prohibit writing, however.)
+*.data*: The data section holds the program's initialized data, 
+such as global variables declared with initializers like int x = 5;.
+
+Command test: 
+#+begin_src sh
+objdump -h obj/kern/kernel
+
+#output:
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000019df  f0100000  00100000  00001000  2**4
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .rodata       000006c0  f01019e0  001019e0  000029e0  2**5
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  2 .stab         00004201  f01020a0  001020a0  000030a0  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  3 .stabstr      00001971  f01062a1  001062a1  000072a1  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  4 .note.gnu.property 0000001c  f0107c14  00107c14  00008c14  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  5 .data         00009300  f0108000  00108000  00009000  2**12
+                  CONTENTS, ALLOC, LOAD, DATA
+  6 .data.rel.local 00001000  f0112000  00112000  00013000  2**12
+                  CONTENTS, ALLOC, LOAD, DATA
+  7 .data.rel.ro.local 00000044  f0113000  00113000  00014000  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  8 .got          00000008  f0113044  00113044  00014044  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  9 .got.plt      0000000c  f011304c  0011304c  0001404c  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+ 10 .bss          00000648  f0113060  00113060  00014060  2**5
+                  CONTENTS, ALLOC, LOAD, DATA
+ 11 .comment      0000001a  00000000  00000000  000146a8  2**0
+                  CONTENTS, READONLY
+
+#+end_src
+
+Take particular note of the /"VMA"/ (or link address) and the /"LMA"/ (or load address) of the .text section. 
+
+The _load address_ of a section is the memory address at which that section should be loaded into memory.
+
+The _link address_ of a section is the memory address from which the section expects to execute. 
+
+***** DONE [Exercise 5] Identify errors
+Identify the first instruction that would "break" or 
+otherwise do the wrong thing if you were to get the boot loader's link address wrong. 
+
+***** DONE [Exercise 6] Examine memory using GDB's x command
+**** NEXT [0/1] The *kernel*
+***** NEXT Using virtual memory to work around position dependence
 
 
 
