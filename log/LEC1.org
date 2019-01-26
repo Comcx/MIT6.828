@@ -1,0 +1,544 @@
+#+TITLE: MIT6.828 OS Studying log
+#+AUTHOR: Comcx
+#+DATE: <2019-01-19 Sat>
+
+
+* TODO [2/3] LEC 1
+  SCHEDULED: <2019-01-20 Sun>
+  DEADLINE:  <2019-01-27 Sun>
+
+** DONE Xv6 resources got!
+** DONE Unix Intro
+** NEXT [50%] LAB 1
+*** DONE Got LAB resources
+*** NEXT [2/3] [Exercise 1] Learning Assembly languages
+**** DONE Got Assembly book -> learning Intel assembly syntax
+Learning NASM syntax...
+- Basic syntax already knew <2019-01-22 Tue>
+- Learning more directions...
+  Plan to install *NASM* tool to test Assembly codes.
+***** DONE Using /NASM/
+      NASM use Intel like syntax, learning with the book...
+
+
+:Operations:
+-- Operations are op codes which can be directly translated to machine code.
+
+-- MOVement
+*MOV dest, source*
+
+-- ADDition
+*ADD dest source*
+
+-- SUBtraction
+*SUB dest source*
+
+-- CoMParision
+*CMP vleft, vright*
+
+For unsigned integers, there are two flags (bits in the FLAGS register)
+that are important: the zero (ZF) and carry (CF) flags. The zero flag is
+set (1) if the resulting difference would be zero. The carry flag is used as a
+borrow flag for subtraction. Consider a comparison like:
+#+begin_src
+cmp vleft, vright
+#+end_src
+The difference of vleft - vright is computed and the flags are set accordingly. 
+If the difference of the of CMP is zero, vleft = vright, then ZF is set
+(i.e. 1) and the CF is unset (i.e. 0). If vleft > vright, then ZF is unset
+and CF is unset (no borrow). If vleft < vright, then ZF is unset and CF
+is set (borrow)
+
+For signed integers, there are 3 flags that are important: the ZERO flag(ZF),
+OVERFLOW flag(OF), and SIGN flag(SF). The OVERFLOW flag
+is set if the result of an operation overflows (or underflows). The sign flag
+is set if the result of an operation is negative. If vleft = vright, the ZF
+is set (just as for unsigned integers). If vleft > vright, ZF is unset and
+SF = OF. If vleft < vright, ZF is unset and SF /= OF.
+
+-- JuMPs
+
+-- Unconsitional jump
+*JMP address*
+
+--------------------------------------
+| *JZ*  | branches only if ZF is set   |
+| *JNZ* | branches only if ZF is unset |
+| *JO*  | branches only if OF is set   |
+| *JNO* | branches only if OF is unset |
+| *JS*  | branches only if SF is set   |
+| *JNS* | branches only if SF is unset |
+| *JC*  | branches only if CF is set   |
+| *JNC* | branches only if CF is unset |
+| *JP*  | branches only if PF is set   |
+| *JNP* | branches only if PF is unset |
+p.s. /PF/ is the parity flag which 
+     indicates the _odd or evenness_ of a result.
+
+
+
+There several variations of /JMP/ instruction:
+
+*SHORT* 
+This jump is very limited in range. It can only move up or down
+_128 bytes_ in memory. The advantage of this type is that it uses less
+memory than the others. It uses a single signed byte to store the
+displacement of the jump. The displacement is how many bytes to
+move ahead or behind. (The displacement is added to EIP). To specify
+a short jump, use the SHORT keyword immediately before the label in
+the JMP instruction.
+
+*NEAR* 
+This jump is the _default_ type for both unconditional and conditional branches, 
+it can be used to jump to _any location in a segment_. 
+Actually, the 80386 supports two types of near jumps. One
+uses two bytes for the displacement. This allows one to move up or
+down roughly 32,000 bytes. The other type uses four bytes for the
+displacement, which of course allows one to move to any location in
+the code segment. The four byte type is the default in 386 protected
+mode. The two byte type can be specified by putting the WORD keyword
+before the label in the JMP instruction.
+
+*FAR* 
+This jump allows control to move to _another code segment_. This is a
+very rare thing to do in 386 protected mode.
+
+-- More(advanced) jumps
+| Signed     | Unsigned                                                       |
+|------------+----------------------------------------------------------------|
+| *JE*       | branches if vleft = vright JE branches if vleft = vright       |
+| *JNE*      | branches if vleft 6= vright JNE branches if vleft 6= vright    |
+| *JL, JNGE* | branches if vleft < vright JB, JNAE branches if vleft < vright |
+| *JLE, JNG* | branches if vleft ≤ vright JBE, JNA branches if vleft ≤ vright |
+| *JG, JNLE* | branches if vleft > vright JA, JNBE branches if vleft > vright |
+| *JGE, JNL* | branches if vleft ≥ vright JAE, JNB branches if vleft ≥ vright |
+
+
+
+
+-- LOOPs
+*LOOP*
+| *LOOP*           | Decrements ECX, if ECX 6= 0, branches to label      |
+| *LOOPE, LOOPZ*   | Decrements ECX (FLAGS register is not modified), if |
+|                  | ECX /= 0 and ZF = 1, branches                       |
+| *LOOPNE, LOOPNZ* | Decrements ECX (FLAGS unchanged), if ECX /=         |
+|                  | 0 and ZF = 0, branches                              |
+
+
+
+-------------------------------------------
+
+-- Bit operations
+
+| *SHL obj bits* | Logic shift left       |
+| *SHR obj bits* | Logic shift right      |
+| *SAL obj bits* | Arithmetic shift left  |
+| *SAR obj bits* | Arithmetic shift right |
+| *ROL obj bits* | Rotate left            |
+| *ROR obj bits* | Rotate right           |
+| *RCL obj bits* |                        |
+| *RCR obj bits* |                        |
+p.s. /obj/ means object, /bits/ refers number of bits to move
+
+
+-- Boolean operations
+
+| *and* | *or* | *xor* | *not* |
+*TEST* operation
+
+The TEST instruction performs an AND operation, but does not store
+the result. 
+It only sets the FLAGS register based on what the result would
+be (much like how the CMP instruction performs a subtraction but only sets
+FLAGS).
+
+
+------------------------------------------
+
+-- Stack
+
+*PUSH* | *POP*
+
+
+-- Call & Ret
+
+The *CALL* instruction makes an unconditional jump to a subprogram and 
+pushes the address of the next instruction on the stack. 
+
+The *RET* instruction pops off an address and jumps to that address. 
+When using these instructions, it is very important that one manage the stack correctly 
+so that the right number is popped off by the RET instruction!
+
+
+:end:
+
+
+
+:Directions:
+-- Directions are ad-hoc codes which can be used to direct assembler to generate code.
+-- Here character 'X' is special for different formats:
+| Unit        | Letter |
+|-------------+--------|
+| Byte        | B      |
+| Word        | W      |
+| Double word | D      |
+| Quad word   | Q      |
+| Ten bytes   | T      |
+
+*/symbol/ equ /value/*
+
+*%define*   -- like C #define
+
+*%include*  -- like C #include
+
+*res/X/*    -- reserves room(unit /X/)
+
+*d/X/*      -- reserve and initalize
+
+*times*     -- for repeated reserve directions
+
+:end:
+
+*Labels* can be used conveniently: 
+
+plain labels are their address;
+
+squared(e.g. [label]) labels are contents inside the address of the label
+
+:Size-Specifiers:
+-- Size specifiers are used when the assembler can not infer the actual data's size of operation.
+
+-- e.g. Suppose we have code:
+#+begin_src
+mov [L6], 1
+#+end_src
+Here, the assembler has no idea what the actual size of /[L6]/ is.
+To solve this, we simply add a /size specifier/:
+#+begin_src
+mov dword [L6], 1
+#+end_src
+
+All size specifiers are:
+
+*byte | word | dword | qword | tword*
+
+:end:
+
+*[Pitfall]* The book says file /asm_io.inc/ can be downloaded from url in book,
+however, I found nothing but a plain article.
+Finally, I found that the link has been updated to:
+
+[[http://pacman128.github.io/pcasm/]]
+
+:( cost me a lot of time.........
+compiler /first.asm/ successfully!!! <2019-01-22 Tue>
+
+
+
+
+**** DONE [Book] Brennan's Guide to Inline Assembly -> 
+     learn AT&T syntax, which is semantically equivalent to Intel syntax.
+
+- *Register naming*
+Register names are prefixed with "*%*". To reference eax:
+| AT&T  | %eax |
+| Intel | eax  |
+
+- *Source/Destination Ordering*
+In AT&T syntax (which is the UNIX standard, BTW) the source is always on the left, 
+and the destination is always on the right.
+So let's load ebx with the value in eax:
+
+| AT&T  | movl %eax, %ebx |
+| Intel | mov  ebx, eax   |
+
+- *Constant value/immediate value format*
+You must prefix all constant/immediate values with "$".
+Let's load eax with the address of the "C" variable booga, which is static.
+
+| AT&T  | movl $_booga, %eax |
+| Intel | mov eax, _booga    |
+
+Now let's load ebx with /0xd00d/:
+| AT&T  | movl $0xd00d, %ebx |
+| Intel | mov ebx, d00dh     |
+
+- *Operator size specification*
+You must suffix the instruction with one of *b, w, or l* to 
+specify the width of the destination register as a byte, word or longword. 
+If you omit this, GAS (GNU assembler) will attempt to guess. 
+You don't want GAS to guess, and guess wrong! Don't forget it.
+
+| AT&T  | movw %ax, %bx |
+| Intel | mov bx, ax    |
+
+- *Referencing memory*
+DJGPP uses 386-protected mode, so you can forget all that real-mode addressing junk, 
+including the restrictions on which register has what default segment, 
+which registers can be base or index pointers. 
+Now, we just get 6 general purpose registers. 
+(7 if you use ebp, but be sure to restore it yourself or compile with -fomit-frame-pointer.)
+Here is the canonical format for 32-bit addressing:
+
+| AT&T  | immed32(basepointer,indexpointer,indexscale)      |
+| Intel | [basepointer + indexpointer*indexscale + immed32] |
+
+--------------------------
+- *Inline assembly*
+Here is the basic format:
+#+begin_src c
+asm ( "statements" : output_registers : input_registers : clobbered_registers);
+
+/* e.g.*/
+asm ("cld\n\t"
+     "rep\n\t"
+     "stosl"
+     : /* no output registers */
+     : "c" (count), "a" (fill_value), "D" (dest)
+     : "%ecx", "%edi" );
+#+end_src
+
+Here's the list of register loading codes that you'll be likely to use:
+
+| a   | eax                                                         |
+| b   | ebx                                                         |
+| c   | ecx                                                         |
+| d   | edx                                                         |
+| S   | esi                                                         |
+| D   | edi                                                         |
+| I   | constant value (0 to 31)                                    |
+| q,r | dynamically allocated register (see below)                  |
+| g   | eax, ebx, ecx, edx or variable in memory                    |
+| A   | eax and edx combined into a 64-bit integer (use long longs) |
+
+*Important note*: If your assembly statement must execute where you put it, 
+(i.e. must not be moved out of a loop as an optimization), 
+put the keyword /volatile/ after asm and before the ()'s. 
+To be ultra-careful, use:
+#+begin_src c
+__asm__ __volatile__ (...whatever...);
+#+end_src
+However, I would like to point out that if your assembly's only purpose is to calculate the output registers, 
+with no other side effects, 
+you should leave off the volatile keyword so your statement will be processed into GCC's 
+common subexpression elimination optimization.
+
+
+
+**** TODO [Book] 80386 Programmer's Reference Manual
+
+*** DONE Build JOS environment [little difficult]
+**** DONE Build *QEMU*
+To build qemu for 6.828, one need to follow the instructions written
+on 6.828 offical guide!
+I followed everything in guide, but I still ran into /error/ while trying to
+install /qemu/:
+- *Situation 1: Python2.7 needed*
+We have to use python under version 3 :(  
+
+*[Solution]* Install python2.7, in my Arch, command:
+#+begin_src shell
+sudo pacman -S python2
+#+end_src
+then, in configuration phase, add option: --python=python2.7
+
+- *Situation 2: Undefined reference to major or minor*
+This cost me large amount of time to fix.
+Finally, I found this /upgrade/
+
+Android's had <sys/sysmacros.h> for a long time, we are likely to
+remove the transtive include from <sys/types.h>
+
+Therefore,
+  
+*[Solution]* add code:
+#+begin_src c
+#include <sys/sysmacros.h>
+#+end_src
+
+- *Situation 3: qemu-nox*
+Since I am using pure tty in Arch, when I tried to command:
+
+make qemu,
+  
+I got /error/: could not connect server.
+
+*[Solution]* use command:  
+#+begin_src shell
+make qemu-nox
+#+end_src
+
+Now I've successfully built /QEMU/ environment! :)
+
+
+**** DONE Debugging *QEMU*
+Unfortunately, I ran into trouble again while debugging.
+I followed instructions:
+1) Command:
+#+begin_src shell
+make qemu-gdb
+#+end_src
+2) Open another terminal window, command in the same directory:
+#+begin_src shell
+make gdb
+#+end_src
+
+then, I got error message:
+#+begin_src
+error while loading shared libraries: libreadline.so.8
+#+end_src
+
+I tried to upgrade readline:
+#+begin_src shell
+sudo pacman -S readline
+#+end_src
+
+Then, cd /usr/lib, I found:
+
+libreadline.so.8
+
+which is already up-to-date.
+
+However, when I ran: make qemu-gdb, error occurred again:
+#+begin_src
+error while loading shared libraries: libreadline.so.7
+#+end_src
+
+This time lack version 7 2333333333 :(
+Finally, I cd /usr/lib, command:
+#+begin_src shell
+sudo ln -s libreadline.so.7 libreadline.so.8
+#+end_src
+to get both version 7 and 8 and everything's ok now.
+
+
+
+
+
+*** NEXT [50%] Simiulating PC & Debug
+**** DONE [Exercise 2] Follow BIOS steps by command _si_
+**** DONE Understanding PC's physical address & boot
+***** TODO [Book] Phil Storrs PC Hardware book
+
+**** NEXT [3/4] Understanding the *Boot loader*
+***** DONE The Boot sector
+Most boot codes lies in the first sector of a bootable device(e.g. CD-ROM).
+However, Some modern machines are now using 2 sectors to load boot codes.
+
+See _"El Torito" Bootable CD-ROM Format Specification._
+
+***** NEXT [1/3] Read the Boot Codes
+****** DONE Reading /boot.S/
+Since the codes in /boot.S/ are not so much, I'll analysis these codes in detail.
+
+However, while reading the source code, I found that I have little knowledge of 8086
+Intel architecture, which is very curial to fully understand /boot.S/.
+
+Therefore, I decide to learn the main usages of /boot.S/(I do not have enough time to learn everything).
+I shall study 80386 programming later. Here I list main purposes of /boot.S/:
+
+- First, the boot loader switches the processor from real mode to 32-bit protected mode, 
+  because it is only in this mode that software can access all the memory above 1MB 
+  in the processor's physical address space.
+
+- Second, the boot loader reads the kernel from the hard disk 
+  by directly accessing the IDE disk device registers via the x86's special I/O instructions. 
+
+****** NEXT Reading /boot.asm/
+Well, little difficult for me currently...
+Do this later
+
+****** NEXT Reading /bootmain.c/
+later
+
+***** DONE Learning *GDB* commands
+| *si(stepi)* | next                                                            |
+| *x/Nx*      | Display a hex dump of N words starting at virtual address addr. |
+| *x/Ni*      | Display the N assembly instructions starting at addr.           |
+| *b *addr*   | Set a breakpoint at the EIP addr.                               |
+| *c*         | Continue to a break point                                       |
+
+***** DONE [3/3] [Exercise 3] Set breakpoints and answering questions
+****** DONE Set break point at 0x7c00 & trace /boot.S/
+****** DONE Trace into bootmain() in /boot/main.c/ and then into readsect()
+****** DONE [4/4] Answering questions
+******* DONE At what point does the processor start executing 32-bit code? 
+	What exactly causes the switch from 16- to 32-bit mode?
+After [ 0:7c2d] => 0x7c2d: ljmp $0x8,$0x7c32，i.s. /ljmp $PROT_MODE_CSEG, $protcseg/ in boot.S,
+the address turned into 0x7c32.
+******* DONE What is the last instruction of the boot loader executed, 
+	and what is the first instruction of the kernel it just loaded?
+#+begin_src c
+((void (*)(void)) (ELFHDR->e_entry))();
+movw $0x1234,0x472
+#+end_src
+******* DONE Where is the first instruction of the kernel?
+/kern/entry.S/
+******* DONE How does the boot loader decide how many sectors it must read in order to 
+	fetch the entire kernel from disk? Where does it find this information?
+objdump -h obj/kern/kernel
+
+**** NEXT [1/2] Loading the *kernel*
+***** DONE [2/2] [Exercise 4] Review basics of C programming
+****** DONE [book] *The C Programming Language*
+Too much pages, I plan to read just pages on
+- *Pointers* <2019-01-26 Sat>
+- *Unix interface* <2019-01-26 Sat>
+  - I/O
+    #+begin_src c
+int n_read = read(int fd, char *buf, int n);
+int n_written = write(int fd, char *buf, int n);
+
+long lseek(int fd, long offset, int origin);
+    #+end_src
+  - File system
+    #+begin_src c
+int fd = open(char *name, int flags, int perms);
+int fd = creat(char *name, int perms);
+    #+end_src
+  - Storage allocation
+
+****** DONE Test with /pointers.c/
+Created /pointers.c/ in directory /MIT6.828/lab/test/
+#+begin_src sh
+gcc pointers.c
+./a.out
+
+#output:
+1: a = 0x7ffd791b0b40, b = 0x55fa124c3260, c = 0x7fbe5dd49515
+2: a[0] = 200, a[1] = 101, a[2] = 102, a[3] = 103
+3: a[0] = 200, a[1] = 300, a[2] = 301, a[3] = 302
+4: a[0] = 200, a[1] = 400, a[2] = 301, a[3] = 302
+5: a[0] = 200, a[1] = 128144, a[2] = 256, a[3] = 302
+6: a = 0x7ffd791b0b40, b = 0x7ffd791b0b44, c = 0x7ffd791b0b41
+
+#+end_src
+
+- Analysis:
+line 1 ~ 4 are simple for me, I only analysis line 5:
+
+| 0xb0b40 | 0xb0b41 | 0xb0b42 | 0xb0b43 |
+|      90 |      01 |      00 |      00 |
+
+The element's stored in address 0xbfb4bf8c~0xbfb4bf8f, whose value is 301, i.e.0x0000012D.
+
+| 0xb0b44 | 0xb0b45 | 0xb0b46 | 0xb0b47 |
+|      2D |      01 |      00 |      00 |
+
+After pointer c is updated, its address turned into 0xbfb4bf89~0xbfb4bf8c, assigned with 500, i.e.0x000001F4
+Therefore, the memory became:
+| 0xb0b40 | 0xb0b41 | 0xb0b42 | 0xb0b43 |
+|      90 |      F4 |      01 |      00 |
+| 0xb0b44 | 0xb0b45 | 0xb0b46 | 0xb0b47 |
+|      00 |      01 |      00 |      00 |
+
+So, the value of a[1] had turned into 0x0001F490 = 128144, and a[2]'s value turned into 0x00000100 = 256.
+
+p.s. It is important to point out that, since I'm using intel architecture, my machine uses /little endian method/.
+
+***** NEXT Learning *ELF* format
+
+
+
+
+
