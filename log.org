@@ -415,7 +415,7 @@ to get both version 7 and 8 and everything's ok now.
 
 
 
-*** NEXT Simiulating PC & Debug
+*** NEXT [50%] Simiulating PC & Debug
 **** DONE [Exercise 2] Follow BIOS steps by command _si_
 **** DONE Understanding PC's physical address & boot
 ***** TODO [Book] Phil Storrs PC Hardware book
@@ -478,11 +478,67 @@ movw $0x1234,0x472
 	fetch the entire kernel from disk? Where does it find this information?
 objdump -h obj/kern/kernel
 
-**** NEXT Loading the *kernel*
-***** NEXT [0/2] [Exercise 4] Review basics of C programming
-****** NEXT [book] *The C Programming Language*
-****** TODO Test with /pointers.c/
+**** NEXT [1/2] Loading the *kernel*
+***** DONE [2/2] [Exercise 4] Review basics of C programming
+****** DONE [book] *The C Programming Language*
+Too much pages, I plan to read just pages on
+- *Pointers* <2019-01-26 Sat>
+- *Unix interface* <2019-01-26 Sat>
+  - I/O
+    #+begin_src c
+int n_read = read(int fd, char *buf, int n);
+int n_written = write(int fd, char *buf, int n);
 
-***** TODO Learning *ELF* format
+long lseek(int fd, long offset, int origin);
+    #+end_src
+  - File system
+    #+begin_src c
+int fd = open(char *name, int flags, int perms);
+int fd = creat(char *name, int perms);
+    #+end_src
+  - Storage allocation
+
+****** DONE Test with /pointers.c/
+Created /pointers.c/ in directory /MIT6.828/lab/test/
+#+begin_src sh
+gcc pointers.c
+./a.out
+
+#output:
+1: a = 0x7ffd791b0b40, b = 0x55fa124c3260, c = 0x7fbe5dd49515
+2: a[0] = 200, a[1] = 101, a[2] = 102, a[3] = 103
+3: a[0] = 200, a[1] = 300, a[2] = 301, a[3] = 302
+4: a[0] = 200, a[1] = 400, a[2] = 301, a[3] = 302
+5: a[0] = 200, a[1] = 128144, a[2] = 256, a[3] = 302
+6: a = 0x7ffd791b0b40, b = 0x7ffd791b0b44, c = 0x7ffd791b0b41
+
+#+end_src
+
+- Analysis:
+line 1 ~ 4 are simple for me, I only analysis line 5:
+
+| 0xb0b40 | 0xb0b41 | 0xb0b42 | 0xb0b43 |
+|      90 |      01 |      00 |      00 |
+
+The element's stored in address 0xbfb4bf8c~0xbfb4bf8f, whose value is 301, i.e.0x0000012D.
+
+| 0xb0b44 | 0xb0b45 | 0xb0b46 | 0xb0b47 |
+|      2D |      01 |      00 |      00 |
+
+After pointer c is updated, its address turned into 0xbfb4bf89~0xbfb4bf8c, assigned with 500, i.e.0x000001F4
+Therefore, the memory became:
+| 0xb0b40 | 0xb0b41 | 0xb0b42 | 0xb0b43 |
+|      90 |      F4 |      01 |      00 |
+| 0xb0b44 | 0xb0b45 | 0xb0b46 | 0xb0b47 |
+|      00 |      01 |      00 |      00 |
+
+So, the value of a[1] had turned into 0x0001F490 = 128144, and a[2]'s value turned into 0x00000100 = 256.
+
+p.s. It is important to point out that, since I'm using intel architecture, my machine uses /little endian method/.
+
+***** NEXT Learning *ELF* format
+
+
+
 
 

@@ -31,8 +31,9 @@ f(void)
 
     c = (int *) ((char *) c + 1);
     *c = 500;
-    printf("5: a[0] = %d, a[1] = %d, a[2] = %d, a[3] = %d\n",
+    printf("5: a[0] = %8.x, a[1] = %8.x, a[2] = %8.x, a[3] = %8.x\n",
 	   a[0], a[1], a[2], a[3]);
+    printf("5.5: c = %p\n", c);
 
     b = (int *) a + 1;
     c = (int *) ((char *) a + 1);
