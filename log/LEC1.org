@@ -731,7 +731,7 @@ before modified, if we start qemu($ make qemu), found:
 After:
 #+begin_src
 6828 decimal is 15254 octal!
-#end_src
+#+end_src
 
 ****** NEXT Answering questions
 - Explain the interface between /printf.c/ and /console.c/. 
