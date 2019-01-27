@@ -630,8 +630,151 @@ Identify the first instruction that would "break" or
 otherwise do the wrong thing if you were to get the boot loader's link address wrong. 
 
 ***** DONE [Exercise 6] Examine memory using GDB's x command
-**** NEXT [0/1] The *kernel*
-***** NEXT Using virtual memory to work around position dependence
+**** NEXT [1/3] The *kernel*
+***** DONE Using virtual memory to work around position dependence
+- *Question*: In kernel, why the /LMA/ is not the same as /VMA/ just like bootloader??
 
+From MIT page: In fact, in the next lab, we will map the entire bottom 256MB of the PC's physical address space, 
+from physical addresses 0x00000000 through 0x0fffffff, to virtual addresses 0xf0000000 through 0xffffffff respectively. 
+You should now see why JOS can only use the first 256MB of physical memory.
+
+****** DONE [Exercise 7] Trace JOS kernel
+Command:
+#+begin_src sh
+objdump -f obj/kern/kernel
+
+# output:
+obj/kern/kernel:     file format elf32-i386
+architecture: i386, flags 0x00000112:
+EXEC_P, HAS_SYMS, D_PAGED
+start address 0x0010000c
+
+#+end_src
+
+Where I knew that the kernel starts to run ar address _0x0010000c_
+
+Therefore, start GDB, set break point at _0x0010000c_ and use x/i to see inside commands:
+#+begin_src sh
+b *0x0010000c
+
+# got:
+(gdb) x/4i 0x100000
+   0x100000:	add    0x1bad(%eax),%dh
+   0x100006:	add    %al,(%eax)
+   0x100008:	decb   0x52(%edi)
+   0x10000b:	in     $0x66,%al
+(gdb) x/4i 0xf0100000
+   0xf0100000 <_start+4026531828>:	add    %al,(%eax)
+   0xf0100002 <_start+4026531830>:	add    %al,(%eax)
+   0xf0100004 <_start+4026531832>:	add    %al,(%eax)
+   0xf0100006 <_start+4026531834>:	add    %al,(%eax)
+
+Here, contents in 0x100000 and 0xf0100000 are different;
+
+si some steps ->
+
+(gdb) x/4i 0x100000
+   0x100000:	add    0x1bad(%eax),%dh
+   0x100006:	add    %al,(%eax)
+   0x100008:	decb   0x52(%edi)
+   0x10000b:	in     $0x66,%al
+(gdb) x/4i 0xf0100000
+   0xf0100000 <_start+4026531828>:	add    0x1bad(%eax),%dh
+   0xf0100006 <_start+4026531834>:	add    %al,(%eax)
+   0xf0100008 <_start+4026531836>:	decb   0x52(%edi)
+   0xf010000b <_start+4026531839>:	in     $0x66,%al
+
+Wow, contents are the same now.
+
+#+end_src
+
+***** NEXT Formatted Printing to the Console
+Most people take functions like /printf()/ for granted, sometimes even thinking of them as "primitives" of the C language. 
+But in an OS kernel, we have to implement all I/O ourselves.
+
+****** DONE Read through /kern/printf.c, lib/printfmt.c,/ and /kern/console.c/
+Their *relationships*:
+/printf.c/ is based on /printfmt.c/;
+
+/printf.c/ and /printfmt.c/ all based on /console.c/;
+
+Function /vcprintf/ uses function /vprintfmt/ in /printfmt.c/,
+Function /putch/ uses function /cputchar/ in /console.c/,
+Functions in /printfmt.c/ uses function /putch/;
+
+****** DONE [Exercise 8] Complete vprintfmt '%o' format
+Open /printfmt.c/, found lines below:
+#+begin_src c
+// (unsigned) octal
+	case 'o':
+		// Replace this with your code.
+		putch('X', putdat);
+		putch('X', putdat);
+		putch('X', putdat);
+		break;
+#+end_src
+
+Modify it:
+#+begin_src c
+// (unsigned) octal
+	case 'o':
+		// Replace this with your code.
+		num = getuint(&ap, lflag);
+                base = 8;
+		goto number;
+#+end_src
+
+before modified, if we start qemu($ make qemu), found:
+#+begin_src
+6828 decimal is XXX octal!
+#+end_src
+After:
+#+begin_src
+6828 decimal is 15254 octal!
+#end_src
+
+****** NEXT Answering questions
+- Explain the interface between /printf.c/ and /console.c/. 
+  Specifically, what function does console.c export? How is this function used by printf.c?
+
+  A: /cputchar/
+
+- Explain the following from /console.c/:
+  #+begin_src c
+if (crt_pos >= CRT_SIZE) {
+              int i;
+              memmove(crt_buf, crt_buf + CRT_COLS, (CRT_SIZE - CRT_COLS) * sizeof(uint16_t));
+              for (i = CRT_SIZE - CRT_COLS; i < CRT_SIZE; i++)
+                      crt_buf[i] = 0x0700 | ' ';
+              crt_pos -= CRT_COLS;
+}
+  #+end_src
+
+  A: Since CRT_SIZE is not big enough to hold crt_pos, page has to roll.
+
+- For the following questions you might wish to consult the notes for Lecture 2. 
+  These notes cover GCC's calling convention on the x86.
+  Trace the execution of the following code step-by-step:
+
+  #+begin_src c
+int x = 1, y = 3, z = 4;
+cprintf("x %d, y %x, z %d\n", x, y, z);
+  #+end_src
+
+  - In the call to cprintf(), to what does fmt point? To what does ap point?
+
+  - List (in order of execution) each call to cons_putc, va_arg, and vcprintf. For cons_putc, list its argument as well. 
+    For va_arg, list what ap points to before and after the call. For vcprintf list the values of its two arguments.
+
+
+- Run the following code.
+  #+begin_src c
+unsigned int i = 0x00646c72;
+cprintf("H%x Wo%s", 57616, &i);
+  #+end_src
+
+
+
+***** TODO The stack
 
 
