@@ -8,7 +8,7 @@ Keep writing `log\` to record my progress.
 * Homework: My homework in 6.828
 * lab: JOS system from 6.828 gate
 * qemu: The ad-hoc QEMU for JOS  
-* log: Records of lECs
+* log: Records of LECs
 
 # Resources  
 [MIT6.828 2018 Gate](https://pdos.csail.mit.edu/6.828/2018/schedule.html)  
