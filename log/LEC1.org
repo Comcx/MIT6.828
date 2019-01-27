@@ -630,7 +630,7 @@ Identify the first instruction that would "break" or
 otherwise do the wrong thing if you were to get the boot loader's link address wrong. 
 
 ***** DONE [Exercise 6] Examine memory using GDB's x command
-**** NEXT [1/3] The *kernel*
+**** NEXT [2/3] The *kernel*
 ***** DONE Using virtual memory to work around position dependence
 - *Question*: In kernel, why the /LMA/ is not the same as /VMA/ just like bootloader??
 
@@ -688,7 +688,7 @@ Wow, contents are the same now.
 
 #+end_src
 
-***** NEXT Formatted Printing to the Console
+***** DONE Formatted Printing to the Console
 Most people take functions like /printf()/ for granted, sometimes even thinking of them as "primitives" of the C language. 
 But in an OS kernel, we have to implement all I/O ourselves.
 
@@ -733,7 +733,7 @@ After:
 6828 decimal is 15254 octal!
 #+end_src
 
-****** NEXT Answering questions
+****** DONE Answering questions
 - Explain the interface between /printf.c/ and /console.c/. 
   Specifically, what function does console.c export? How is this function used by printf.c?
 
@@ -762,19 +762,62 @@ cprintf("x %d, y %x, z %d\n", x, y, z);
   #+end_src
 
   - In the call to cprintf(), to what does fmt point? To what does ap point?
+    A: fmt points to "x %d, y %x, z %d\n"; ap points to x, y, z
 
   - List (in order of execution) each call to cons_putc, va_arg, and vcprintf. For cons_putc, list its argument as well. 
     For va_arg, list what ap points to before and after the call. For vcprintf list the values of its two arguments.
-
+    A: later...
 
 - Run the following code.
   #+begin_src c
 unsigned int i = 0x00646c72;
 cprintf("H%x Wo%s", 57616, &i);
   #+end_src
+  A: got *"He110 World"*, interesting:)
+
+***** NEXT The stack
+****** DONE [Exercise 9] Determine where the kernel initializes its stack
+- Determine where the kernel initializes its stack, and exactly where in memory its stack is located. 
+  A: found in /kern/entry.S/:
+  #+begin_src
+relocated:
+
+	# Clear the frame pointer register (EBP)
+	# so that once we get into debugging C code,
+	# stack backtraces will be terminated properly.
+	movl	$0x0,%ebp			# nuke frame pointer
+
+	# Set the stack pointer
+	movl	$(bootstacktop),%esp
+  #+end_src
+
+- How does the kernel reserve space for its stack? 
+  And at which "end" of this reserved area is the stack pointer initialized to point to?
+
+  A: Stack start at /0xf0110000/, KSTKSIZE which is 32KB large.
+
+****** DONE [Exercise 10] Find the address of the /test_backtrace/ function in /obj/kern/kernel.asm/
+#+begin_src c
+// Test the stack backtrace function (lab 1 only)
+void
+test_backtrace(int x)
+{
+	cprintf("entering test_backtrace %d\n", x);
+	if (x > 0)
+		test_backtrace(x-1);
+	else
+		mon_backtrace(0, 0, 0);
+	cprintf("leaving test_backtrace %d\n", x);
+}
+#+end_src
+
+****** NEXT [Exercise 11] Implement the backtrace function
+<2019-01-27 Sun>
+A little tired today, I plan to accumulate more background knowledge...
 
 
 
-***** TODO The stack
+
+
 
 
